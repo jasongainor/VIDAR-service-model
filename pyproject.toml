@@ -1,0 +1,12 @@
+[project]
+name = "vidar-service-model"
+version = "0.1.0"
+description = "Local grounded Volvo VIDA service assistant — retrieval harness for slingj/VIDAR-Grounded-7B"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.27",          # embedding endpoint calls + MCP HTTP transport
+    "lxml>=6.1.1",          # VIDA document XML parsing (extract_docs)
+    "mcp[cli]>=1.27.2",     # MCP server (server.py)
+    "python-tds>=1.17.1",   # VIDA SQL Server driver (dbconfig / extract_*)
+    "sqlite-vec>=0.1.9",    # hybrid vector retrieval store
+]

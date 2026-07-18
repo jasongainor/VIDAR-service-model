@@ -1,0 +1,43 @@
+# Vehicle context for vida-kb — copy to `car.toml` and edit for YOUR car.
+#
+# vida-kb scopes retrieval, EPC applicability, the engine-family safety gates and all
+# user-facing labels to ONE vehicle. With no car.toml the tool uses its baked-in default
+# (the 2005 S60R, B5254T4). Create car.toml to point it at a different VIDA car — no code
+# changes. Every VIDA_CAR_<KEY> environment variable overrides the matching key below.
+#
+# car.toml is gitignored (it is YOUR config, not shippable data). This example is the
+# committed template.
+
+[car]
+# VIDA vehicle-profile id — the GUID-like id from the `profiles` table for your exact
+# car. Used to scope EPC part applicability (ComponentConditions.fkProfile). Find it by
+# matching model/year/engine in the VIDA `profiles` table of your extracted store.
+profile_id = "0b00c8af815cadc9"
+
+# Exact engine code as VIDA tags it (documents.engine / profiles.engine).
+engine = "B5254T4"
+
+# VIDA `profiles.model` and `profiles.year` strings for your car. Used to resolve the
+# car's applicable documents (and its model-only / model+year ancestor profiles).
+# Either may be omitted (treated as "match any") if your car is engine-scoped only.
+model = "S60 (-09)"
+year  = "2005"
+
+# Human label shown in citations and list_sources.
+label = "2005 Volvo S60R (B5254T4)"
+
+# OPTIONAL — engines that share this car's head/torque geometry (its engine family).
+# Cross-serving a torque spec or figure outside this family is a SAFETY hazard, so this
+# gate is strict. Leave unset to auto-derive <block-letter><cylinder-digit>\d{3} from
+# `engine` (B5254T4 -> "B5\\d{3}", the white-block 5-cyl petrol family). Override only
+# for engines whose code scheme differs (e.g. older red-block B2xx families).
+# engine_family = "B5\\d{3}"
+
+# OPTIONAL — extra short tokens that mean "this car" when passed as search_docs(profile=).
+# The engine code is always an alias automatically; add nicknames here.
+aliases = ["s60r"]
+
+# OPTIONAL — wiring pinout provenance (lookup_pin citations + list_sources). The bundled
+# pinout CSV is S60R-specific; only relevant if you supply your own wiring data.
+pinout_doc = "TP 3976201"
+pinout_source = "TP 3976201 wiring diagrams via community-verified CSV"
