@@ -1,0 +1,177 @@
+{
+  "comment": "vida-eval regression set. Grading is case-insensitive substring matching. must_mention: ALL must appear in the turn's final answer. must_not_say: NONE may appear. tool_must_not_contain: NONE may appear in any tool-call argument string for that turn (catches retrieval-layer contamination even when the answer looks clean). Expectations come from ground truth verified against the store during phase-1 acceptance (see docs/handoff.md).",
+  "cases": [
+    {
+      "id": "m6-intake-torque",
+      "turns": [
+        {
+          "q": "What is the tightening torque for the M6 intake manifold bolts?",
+          "must_mention": ["19", "VCC-112365"],
+          "must_not_say": []
+        }
+      ]
+    },
+    {
+      "id": "exhaust-studs",
+      "comment": "20 Nm is citable from VCC-143022-1 (turbo replacing) or VCC-138450-1 (Group 25, S60-tagged) — don't pin one ref.",
+      "turns": [
+        {
+          "q": "What is the procedure to install the exhaust manifold studs, and what torque do they get?",
+          "must_mention": ["20"],
+          "must_not_say": []
+        }
+      ]
+    },
+    {
+      "id": "coolant-capacity",
+      "turns": [
+        {
+          "q": "What is the engine coolant capacity?",
+          "must_mention": ["8.0"],
+          "must_not_say": []
+        }
+      ]
+    },
+    {
+      "id": "thermostat-procedure",
+      "turns": [
+        {
+          "q": "How do I replace the engine coolant thermostat?",
+          "must_mention": ["VCC-137506"],
+          "must_not_say": []
+        }
+      ]
+    },
+    {
+      "id": "throttle-adaptation",
+      "turns": [
+        {
+          "q": "How do I perform a throttle body adaptation after cleaning the throttle body?",
+          "must_mention": ["VCC-136946"],
+          "must_not_say": []
+        }
+      ]
+    },
+    {
+      "id": "ecm-b4-pin",
+      "turns": [
+        {
+          "q": "What is connected to ECM pin B4, and what wire color is it?",
+          "must_mention": ["BN"],
+          "must_not_say": []
+        }
+      ]
+    },
+    {
+      "id": "cem-a6-pin",
+      "turns": [
+        {
+          "q": "What does the wiring documentation say about CEM pin A:6?",
+          "must_mention": ["A:6"],
+          "must_not_say": []
+        }
+      ]
+    },
+    {
+      "id": "fuel-rail-oring",
+      "turns": [
+        {
+          "q": "Is there an O-ring where the fuel line connects to the fuel rail?",
+          "must_mention": ["o-ring"],
+          "must_not_say": []
+        }
+      ]
+    },
+    {
+      "id": "spark-gap",
+      "comment": "Ground truth corrected 2026-06-12: VCC-094222-1 'Replacing spark plugs' states 'Turbocharged engines: Correct spark gap: 0.7 - 0.8 mm' (verified in store; doc is tagged to other models, statement is turbo-generic). The earlier 'no gap in 2014D' claim was wrong.",
+      "turns": [
+        {
+          "q": "What is the spark plug electrode gap specification for the B5254T4?",
+          "must_mention": ["0.7", "0.8"],
+          "must_not_say": []
+        }
+      ]
+    },
+    {
+      "id": "tesla-abstain",
+      "comment": "Out-of-corpus vehicle; model must not invent a value.",
+      "turns": [
+        {
+          "q": "What is the recommended tire pressure for a 2019 Tesla Model 3?",
+          "must_mention": [],
+          "must_not_say": ["42 psi", "45 psi", "40 psi"]
+        }
+      ]
+    },
+    {
+      "id": "epc-part-by-number",
+      "comment": "Exact part-number lookup must route to epc_part, not search_docs. 1271998 = Heated oxygen sensor (verified in EPC).",
+      "turns": [
+        {
+          "q": "Look up Volvo part number 1271998 — what is it?",
+          "must_mention": ["oxygen sensor"],
+          "must_not_say": [],
+          "tool_must_use": ["epc_part"]
+        }
+      ]
+    },
+    {
+      "id": "epc-component-thermostat",
+      "comment": "Component-name part lookup routes to epc_part; this-car thermostat parts incl. 271664/3730414/31293698/31293700/8692934. Exact number the model cites varies, so the check is routing + naming, not a specific number.",
+      "turns": [
+        {
+          "q": "What is the Volvo part number for the engine coolant thermostat?",
+          "must_mention": ["thermostat"],
+          "must_not_say": [],
+          "tool_must_use": ["epc_part"]
+        }
+      ]
+    },
+    {
+      "id": "contamination-unrelated",
+      "comment": "THE two-turn A->B independence contract: Q2 is unrelated to Q1 and must show zero topic-A traces in tool calls or answer.",
+      "turns": [
+        {
+          "q": "What is the engine coolant capacity?",
+          "must_mention": ["8.0"],
+          "must_not_say": []
+        },
+        {
+          "q": "What is the tightening torque for the M6 intake manifold bolts?",
+          "must_mention": ["19"],
+          "must_not_say": ["coolant", "8.0 l"],
+          "tool_must_not_contain": ["coolant", "antifreeze", "capacity"]
+        }
+      ]
+    },
+    {
+      "id": "contamination-adjacent",
+      "comment": "Harder variant: Q2 is in the same domain (cooling system) but a different question. The procedure may legitimately mention coolant/draining, so the answer check only bans restating the Q1 capacity; the tool check bans capacity-seeking queries.",
+      "turns": [
+        {
+          "q": "What is the engine coolant capacity?",
+          "must_mention": ["8.0"],
+          "must_not_say": []
+        },
+        {
+          "q": "How do I replace the thermostat?",
+          "must_mention": ["VCC-137506"],
+          "must_not_say": [],
+          "tool_must_not_contain": ["capacity"]
+        }
+      ]
+    },
+    {
+      "id": "cam-seals-compound",
+      "comment": "Loop-discipline probe (the 2026-06-13 ~60-turn runaway). Compound part+procedure question where 'cam seal' is NOT an EPC catalogue name (Volvo files it as 'Sealing ring'), so epc_part component search misses and a weak model thrashes. A good model makes a bounded number of tool calls and writes a grounded partial answer. The must_not_say guards CONVERGENCE: if the native harness returns its '(no answer: tool-loop limit reached)' sentinel, this case FAILS. Used as the primary discriminator in the model bake-off.",
+      "turns": [
+        {
+          "q": "What's the part numbers and procedures for installing the cam seals near the cam position sensors?",
+          "must_mention": [],
+          "must_not_say": ["tool-loop limit reached"]
+        }
+      ]
+    }
+  ]
+}

@@ -56,5 +56,17 @@ Then point Open WebUI at `http://localhost:8765` and run `VIDAR-Grounded-7B` in 
 - **No VIN decode.** VIDA's VIN→profile tables were never located during schema discovery; the assistant identifies vehicles by **model + year + engine code**, not VIN — by design.
 - **Read-only + allowlisted.** SQL tools use fixed parameterized templates against a read-only login; the model never writes SQL (prompt-injection containment).
 
+## How the model was made — and how to reproduce or challenge it
+
+The repo carries the pieces that define the model's behaviour, not just the harness that serves it:
+
+- **[`grounding/contract.py`](grounding/contract.py)** — the exact message shape the model is trained and served under. If you fine-tune or re-serve, match this or results won't. This is the one file to read first.
+- **[`dataset/`](dataset/)** — the generator that turns *your* licensed VIDA install into the training JSONL, plus [`DATASET_CARD.md`](dataset/DATASET_CARD.md). No rows are distributed; you produce your own.
+- **[`vida-eval/`](vida-eval/)** — the frozen benchmark and its graders. Part numbers, torque values and refusals are graded **deterministically** (a wrong torque is a safety failure, not a style nit); only procedure-correctness escalates to a model judge.
+- **[`TRAINING.md`](TRAINING.md)** — the QLoRA recipe: hyperparameters, the per-family response-masking markers, and the sequence-length finding. The trainer itself isn't shipped — it was thin glue over fast-moving APIs, and a stale trainer is worse than an accurate recipe.
+- **[`publish/`](publish/)** — model + card upload to Hugging Face.
+
+The eval matters more than it looks: the numbers on the model card are unverifiable without it, and it's what tells you whether a quantized artifact still holds up.
+
 ## License
 See `LICENSE` — released in the spirit of the open Volvo interop/research tooling community.

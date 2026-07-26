@@ -38,3 +38,21 @@ __pycache__/
 *.pyc
 .venv/
 .pytest_cache/
+
+# carried over 2026-07-26 alongside dataset/ + vida-eval/ + publish/
+.DS_Store
+.claude/
+.scratch/
+.venv-train/
+.webui_secret_key
+runs/
+*.7z
+*.bin
+*.exe
+*.frf
+*.kp
+*.ori
+*.pin
+
+# pinouts are fetched from jasongainor/volvo-p2-pinout, not vendored
+data/pinouts/*.csv

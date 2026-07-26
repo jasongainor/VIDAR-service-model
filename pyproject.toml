@@ -9,4 +9,5 @@ dependencies = [
     "mcp[cli]>=1.27.2",     # MCP server (server.py)
     "python-tds>=1.17.1",   # VIDA SQL Server driver (dbconfig / extract_*)
     "sqlite-vec>=0.1.9",    # hybrid vector retrieval store
+    "huggingface-hub>=0.34",  # publish/upload_to_hf.py — model + card upload
 ]
